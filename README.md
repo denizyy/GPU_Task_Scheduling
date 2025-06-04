@@ -1,46 +1,56 @@
 # Intelligent Task Orchestration Strategies for GPU
 
-This project simulates lightweight GPU scheduling strategies using Python to evaluate job waiting times and resource utilization in a constrained GPU environment. Inspired by principles from real-world orchestrators like Run:ai, it focuses on understanding trade-offs between simplicity, fairness, and efficiency.
+This project simulates GPU job scheduling strategies using Python to evaluate their efficiency in managing computational workloads. The goal is to analyze and compare the performance of various scheduling policies in terms of average waiting time and fairness in a constrained GPU environment.
 
 ## Overview
 
-We implemented and compared three GPU scheduling strategies:
+We implemented and compared three scheduling strategies:
 
 ### Implemented Policies
 
-| Policy  | Description |
-|---------|-------------|
-| FIFO (First-In, First-Out) | Jobs are executed strictly in the order of arrival. Simple, but can cause long delays if early jobs are long. |
-| BinPack | Tries to pack jobs into the earliest available GPUs. Minimizes GPU idleness by tightly filling available slots. |
-| LAS (Least Attending Scheduler) | Tracks historical GPU usage per user and prioritizes users with the lowest cumulative consumption to promote fairness. |
+| Strategy              | Description |
+|------------------------|-------------|
+| FIFO (First-In, First-Out) | Jobs are executed in order of arrival. Simple but may cause long queues if early jobs are long. |
+| BinPack | Attempts to pack jobs into the earliest available GPUs. Efficient in resource usage but not fairness-aware. |
+| Least Attending Scheduler (LAS) | Prioritizes users with the lowest cumulative GPU usage, promoting fairness over time. |
 
-Note: Originally planned strategies like Round Robin and classic Fair Share were excluded from the final implementation.
+Note: Although other strategies like Round Robin and Fair Share were initially planned, they were excluded in the final version.
 
 ## Simulation Setup
 
-- Synthetic job queue with:
-  - `arrival_time` (based on exponential distribution)
-  - `duration` (job runtime)
+- Simulated job queue includes:
+  - `arrival_time`
+  - `duration`
   - `gpu_required` (1 or 2)
-  - `priority` and `user` (used for LAS)
-- Cluster configuration: 3 GPUs
-- Total jobs: 50
+  - `priority`
+  - `user` (used by LAS)
+- Cluster: 3 GPUs
+- Number of jobs: 50
+- Environment: CPU-based simulation (Google Colab)
 
-System utilization (ρ) is also computed for performance benchmarking.
+## Results (Latest Run)
 
-## Key Result Example
+| Strategy         | Avg Waiting Time (s) |
+|------------------|----------------------|
+| Least Attending  | **1.15**             |
+| BinPack          | 30.90                |
+| FIFO             | 33.58                |
 
-| Strategy | Avg Waiting Time (s) |
-|----------|----------------------|
-| BinPack  | ~3368                |
-| FIFO     | ~3482                |
-| LAS      | Varies depending on user distribution |
+### Observations
 
-## Technologies
+- **Least Attending** significantly reduced waiting times by balancing long-term user usage.
+- **BinPack** minimized idle GPU time through efficient job packing.
+- **FIFO**, while simple, showed the highest delay due to lack of prioritization or optimization.
 
-- Python 3
-- Google Colab (CPU-only environment)
-- Pandas, NumPy, Matplotlib
+## Technologies Used
+
+- Python (Pandas, NumPy, Matplotlib)
+- Jupyter Notebook / Google Colab
+- No actual GPU hardware; CPU-only logic-based simulation
 
 
+## Future Work
+
+- Explore preemption penalties and fairness aging
+- Extend simulation to real GPU environments using Run:ai or Kubernetes
 
